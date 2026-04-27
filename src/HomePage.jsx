@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
+
 const styles = `
   .hp-wrapper {
     background-color: #000000;
@@ -138,9 +142,38 @@ const styles = `
   .hp-dev-note strong {
     color: #F69A2C;
   }
+
+  .hp-insta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    text-decoration: none;
+    color: #888;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .hp-insta:hover {
+    color: #fff;
+  }
+
+  .hp-insta-count {
+    color: #F69A2C;
+    font-weight: 800;
+  }
 `;
 
 export default function HomePage() {
+  const [instaCount, setInstaCount] = useState(null);
+
+  useEffect(() => {
+    return onSnapshot(doc(db, 'settings', 'site'), (snap) => {
+      if (snap.exists()) setInstaCount(snap.data().instagramFollowers ?? null);
+    });
+  }, []);
+
   return (
     <>
       <style>{styles}</style>
@@ -166,6 +199,15 @@ snacks, vibes, disco ball etc.)</p>
           </a>
 
         </div>
+
+        {instaCount !== null && (
+          <a className="hp-insta" href="https://www.instagram.com/weareyourlastresort/" target="_blank" rel="noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24c3.259 0 3.667-.014 4.947-.072 1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947 0-3.259-.014-3.667-.072-4.947-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+            </svg>
+            <span className="hp-insta-count">{Number(instaCount).toLocaleString()}</span> followers
+          </a>
+        )}
 
         <div className="hp-dev-note">
           <strong>Note to the group:</strong> Whoever is editing the home page — feel free to change the design, copy, or anything else you think would make it better. This is just a starting point to get us going.
