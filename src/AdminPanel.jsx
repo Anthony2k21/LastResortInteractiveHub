@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
 const CATEGORIES = ['Signature', 'Cocktail', 'Craft Beer', 'Classic'];
@@ -207,6 +207,40 @@ const styles = `
   .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
   .confirm-box { max-width: 360px; }
   .confirm-box p { color: #aaa; font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5; }
+
+  .ap-section {
+    margin-top: 40px;
+  }
+  .ap-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .ap-insta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1A1A1A;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 16px 20px;
+  }
+  .ap-insta-row input {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fff;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 160px;
+    transition: border-color 0.2s;
+  }
+  .ap-insta-row input:focus { outline: none; border-color: #F69A2C; }
+  .ap-insta-label { font-size: 0.82rem; color: #888; flex: 1; }
 `;
 
 export default function AdminPanel({ user }) {
@@ -217,6 +251,8 @@ export default function AdminPanel({ user }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [instaCount, setInstaCount] = useState('');
+  const [instaSaving, setInstaSaving] = useState(false);
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'drinks'), (snap) => {
@@ -227,6 +263,18 @@ export default function AdminPanel({ user }) {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    getDoc(doc(db, 'settings', 'site')).then(snap => {
+      if (snap.exists()) setInstaCount(snap.data().instagramFollowers ?? '');
+    });
+  }, []);
+
+  async function saveInstaCount() {
+    setInstaSaving(true);
+    await setDoc(doc(db, 'settings', 'site'), { instagramFollowers: Number(instaCount) }, { merge: true });
+    setInstaSaving(false);
+  }
 
   // Open the add drink modal, resets the form and error state
   function openAdd() {
@@ -360,6 +408,23 @@ export default function AdminPanel({ user }) {
                 </tbody>
               </table>
             )}
+          </div>
+        </div>
+
+        <div className="ap-section">
+          <div className="ap-section-title">Instagram</div>
+          <div className="ap-insta-row">
+            <span className="ap-insta-label">📸 Follower count shown on homepage</span>
+            <input
+              type="number"
+              min="0"
+              value={instaCount}
+              onChange={e => setInstaCount(e.target.value)}
+              placeholder="e.g. 1234"
+            />
+            <button className="btn btn-primary" onClick={saveInstaCount} disabled={instaSaving}>
+              {instaSaving ? 'Saving…' : 'Save'}
+            </button>
           </div>
         </div>
 
