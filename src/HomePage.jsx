@@ -45,6 +45,7 @@ const styles = `
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 60px;
+    white-space: pre-line;
   }
 
   .hp-cards {
@@ -61,8 +62,6 @@ const styles = `
     border: 1px solid #2a2a2a;
     border-radius: 8px;
     padding: 36px 32px;
-    flex: 1 1 280px;
-    max-width: 340px;
     cursor: pointer;
     text-align: left;
     text-decoration: none;
@@ -70,21 +69,25 @@ const styles = `
     display: block;
     transition: border-color 0.2s, background 0.2s;
     box-sizing: border-box;
-
     flex: 1 1 calc(50% - 20px);
     max-width: calc(50% - 20px);
   }
-  
+
   @media (max-width: 600px) {
-  .hp-card {
-    flex: 1 1 100%;
-    max-width: 100%;
+    .hp-card {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
   }
-}
 
   .hp-card:hover {
     border-color: #931D0A;
     background: #1f1a1a;
+  }
+
+  .hp-card.lighting:hover {
+    border-color: #F69A2C;
+    background: #1a1a14;
   }
 
   .hp-card-icon {
@@ -194,10 +197,13 @@ export default function HomePage() {
         <h1 className="hp-title">
           The Last <span>Resort</span>
         </h1>
-        <p className="hp-tagline">Your second living room
+
+        <p className="hp-tagline">
+          {`Your second living room
 except with draught beer
 (and wine, spirits,
-snacks, vibes, disco ball etc.)</p>
+snacks, vibes, disco ball etc.)`}
+        </p>
 
         <div className="hp-cards">
           <a className="hp-card" href="#leaderboard">
@@ -213,39 +219,47 @@ snacks, vibes, disco ball etc.)</p>
             <div className="hp-card-icon">🍺</div>
             <div className="hp-card-title"><span>Random Drink Suggester</span></div>
             <div className="hp-card-desc">
-              Can't decide? want to try something new?
+              Can't decide? Want to try something new?
             </div>
-            <span className="hp-card-cta">See whats tasty! →</span>
+            <span className="hp-card-cta">See what's tasty! →</span>
           </a>
-          
-          <a className="hp-card" href="#suggestions">
-           <div className="hp-card-icon">💡</div>
-           <div className="hp-card-title"><span>Suggest your ideas!</span></div>
-           <div className="hp-card-desc">
-           Tell us what we're missing. 
-          </div>
-          <span className="hp-card-cta">Start suggesting! →</span>
-         </a>
-                 
 
+          <a className="hp-card" href="#suggestions">
+            <div className="hp-card-icon">💡</div>
+            <div className="hp-card-title"><span>Suggest your ideas!</span></div>
+            <div className="hp-card-desc">
+              Tell us what we're missing.
+            </div>
+            <span className="hp-card-cta">Start suggesting! →</span>
+          </a>
+
+          <a className="hp-card lighting" href="#lighting">
+            <div className="hp-card-icon">💡</div>
+            <div className="hp-card-title">Venue <span>Lighting</span></div>
+            <div className="hp-card-desc">
+              Set the mood. Choose a colour preset to change the atmosphere of the bar.
+            </div>
+            <span className="hp-card-cta">Change the lights →</span>
+          </a>
         </div>
 
         {instaCount !== null && (
-          <a className="hp-insta" href="https://www.instagram.com/weareyourlastresort/" target="_blank" rel="noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24c3.259 0 3.667-.014 4.947-.072 1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947 0-3.259-.014-3.667-.072-4.947-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-            </svg>
+          <a
+            className="hp-insta"
+            href="https://www.instagram.com/weareyourlastresort/"
+            target="_blank"
+            rel="noreferrer"
+          >
             <span className="hp-insta-count">{Number(instaCount).toLocaleString()}</span> followers
           </a>
         )}
 
         <div className="hp-dev-note">
-          <strong>Note to the group:</strong> Whoever is editing the home page — feel free to change the design, copy, or anything else you think would make it better. This is just a starting point to get us going.
+          <strong>Note to the group:</strong> Whoever is editing the home page — feel free to change the design, copy, or anything else you think would make it better.
         </div>
 
         <p className="hp-footer">
-          &copy; The Last Resort &nbsp;·&nbsp;{' '}
-          <a href="#home">Home</a>
+          &copy; The Last Resort &nbsp;·&nbsp; <a href="#home">Home</a>
         </p>
       </div>
     </>
