@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, increment } from 'firebase/firestore';
 import { db } from './firebase';
 
 const styles = `
@@ -18,11 +18,25 @@ const styles = `
   }
 
   .lb-wrapper {
-    background-color: var(--colour-background);
+    background: url('/bg.jpg') no-repeat center center / cover;
     min-height: 100vh;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: var(--colour-text);
     padding: 40px 20px;
+    position: relative;
+  }
+
+  .lb-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 0;
+  }
+
+  .lb-wrapper > * {
+    position: relative;
+    z-index: 1;
   }
 
   .lb-header {
@@ -35,10 +49,17 @@ const styles = `
     font-weight: 800;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .lb-header h1 span {
-    color: var(--colour-accent);
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .lb-header p {
@@ -46,41 +67,6 @@ const styles = `
     margin-top: 8px;
     font-size: 0.95rem;
     font-weight: 400;
-  }
-
-  .lb-filters {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-  }
-
-  .lb-filter-btn {
-    background: var(--colour-surface);
-    color: var(--colour-text);
-    border: 1px solid #333;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-  }
-
-  .lb-filter-btn:hover,
-  .lb-filter-btn.active {
-    background: var(--colour-primary);
-    border-color: var(--colour-primary);
-    color: var(--colour-text);
-  }
-
-  .lb-filter-btn:focus {
-    outline: 2px solid var(--colour-accent);
-    outline-offset: 2px;
   }
 
   .lb-table-container {
@@ -222,6 +208,46 @@ const styles = `
     vertical-align: middle;
   }
 
+  .lb-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #888;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    max-width: 860px;
+    width: 100%;
+    display: block;
+    margin: 0 auto 24px;
+    transition: color 0.15s;
+  }
+  .lb-back:hover { color: #F69A2C; }
+
+  .upvote-btn {
+    background: none;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #888;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    transition: color 0.15s, border-color 0.15s;
+    line-height: 1;
+  }
+  .upvote-btn:hover {
+    color: #F69A2C;
+    border-color: #F69A2C;
+  }
+  .upvote-btn:active {
+    transform: scale(0.92);
+  }
+
   .lb-footer {
     text-align: center;
     margin-top: 24px;
@@ -243,12 +269,9 @@ const styles = `
 `;
 
 
-const CATEGORIES = ['All', 'Signature', 'Cocktail', 'Craft Beer', 'Classic'];
-
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 export default function DrinkLeaderboard() {
-  const [activeCategory, setActiveCategory] = useState('All');
   const [drinks, setDrinks] = useState([]);
 
   // Listen to real-time updates from Firestore
@@ -261,33 +284,21 @@ export default function DrinkLeaderboard() {
     return unsub;
   }, []);
 
-  // Filter drinks based on active category
-  const filtered = activeCategory === 'All'
-    ? drinks
-    : drinks.filter(d => d.category === activeCategory);
+  const maxVotes = drinks[0]?.votes ?? 1;
 
-  const maxVotes = filtered[0]?.votes ?? 1;
+  function upvote(id) {
+    updateDoc(doc(db, 'drinks', id), { votes: increment(1) });
+  }
 
   return (
     <>
       <style>{styles}</style>
       <div className="lb-wrapper">
+        <button className="lb-back" onClick={() => { window.location.hash = ''; }}>← Back</button>
         <header className="lb-header">
           <h1>Drink <span>Leaderboard</span></h1>
           <p>Your Last Resort — voted by the regulars</p>
         </header>
-
-        <nav className="lb-filters" aria-label="Filter by category">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              className={`lb-filter-btn${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </nav>
 
         <div className="lb-table-container">
           <table className="lb-table" aria-label="Drink leaderboard">
@@ -300,7 +311,7 @@ export default function DrinkLeaderboard() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((drink, i) => {
+              {drinks.map((drink, i) => {
                 const rank = i + 1;
                 const pct = Math.round((drink.votes / maxVotes) * 100);
                 return (
@@ -318,7 +329,6 @@ export default function DrinkLeaderboard() {
                         {drink.name}
                         {drink.isNew && <span className="badge-new">New</span>}
                       </div>
-                      <div className="drink-category">{drink.category}</div>
                     </td>
                     <td className="hide-mobile">
                       <div className="votes-bar-wrap">
@@ -333,6 +343,9 @@ export default function DrinkLeaderboard() {
                     </td>
                     <td className="right hide-mobile">
                       <span className="price-tag">{drink.price}</span>
+                    </td>
+                    <td className="right">
+                      <button className="upvote-btn" onClick={() => upvote(drink.id)}>▲</button>
                     </td>
                   </tr>
                 );

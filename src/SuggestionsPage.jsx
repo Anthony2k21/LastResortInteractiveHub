@@ -18,12 +18,43 @@ const styles = `
   }
 
   .sg-wrapper {
-    background-color: var(--colour-background);
+    background: url('/bg.jpg') no-repeat center center / cover;
     min-height: 100vh;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: var(--colour-text);
     padding: 40px 20px;
+    position: relative;
   }
+
+  .sg-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 0;
+  }
+
+  .sg-wrapper > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sg-back {
+    display: block;
+    max-width: 860px;
+    margin: 0 auto 24px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .sg-back:hover { color: #F69A2C; }
 
   .sg-header {
     text-align: center;
@@ -35,10 +66,17 @@ const styles = `
     font-weight: 800;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .sg-header h1 span {
-    color: var(--colour-accent);
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .sg-header p {
@@ -215,6 +253,7 @@ export default function SuggestionsPage() {
     <>
       <style>{styles}</style>
       <div className="sg-wrapper">
+        <button className="sg-back" onClick={() => { window.location.hash = ''; }}>← Back</button>
         <header className="sg-header">
           <h1>Make a <span>Suggestion</span></h1>
           <p>Got an idea? We're all ears.</p>
@@ -236,23 +275,6 @@ export default function SuggestionsPage() {
             {submitting ? 'Sending...' : 'Submit'}
           </button>
           {submitted && <p className="sg-success">✓ Suggestion submitted!</p>}
-        </div>
-
-        <div className="sg-list-container">
-          <div className="sg-list-header">Recent Suggestions</div>
-          {suggestions.map(s => (
-            <div className="sg-item" key={s.id}>
-              <div>{s.text}</div>
-              <div className="sg-item-time">
-                {s.createdAt?.toDate
-                  ? s.createdAt.toDate().toLocaleDateString('en-GB', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit'
-                    })
-                  : 'Just now'}
-              </div>
-            </div>
-          ))}
         </div>
 
         <p className="sg-footer">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
 const CATEGORIES = ['Signature', 'Cocktail', 'Craft Beer', 'Classic'];
@@ -241,6 +241,46 @@ const styles = `
   }
   .ap-insta-row input:focus { outline: none; border-color: #F69A2C; }
   .ap-insta-label { font-size: 0.82rem; color: #888; flex: 1; }
+
+  .ap-suggestion-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .ap-suggestion-form input {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fff;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .ap-suggestion-form input:focus { outline: none; border-color: #F69A2C; }
+  .ap-suggestion-form input.input-name { flex: 1; min-width: 140px; }
+  .ap-suggestion-form input.input-img { flex: 2; min-width: 200px; }
+  .ap-suggestion-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #2a2a2a;
+    flex-shrink: 0;
+  }
+
+  .ap-inbox-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-bottom: 1px solid #2a2a2a;
+    gap: 16px;
+  }
+  .ap-inbox-item:last-child { border-bottom: none; }
+  .ap-inbox-text { font-size: 0.9rem; color: #fff; flex: 1; line-height: 1.5; }
+  .ap-inbox-time { font-size: 0.75rem; color: #555; margin-top: 4px; }
 `;
 
 export default function AdminPanel({ user }) {
@@ -253,6 +293,29 @@ export default function AdminPanel({ user }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [instaCount, setInstaCount] = useState('');
   const [instaSaving, setInstaSaving] = useState(false);
+  const [suggestionDrinks, setSuggestionDrinks] = useState([]);
+  const [newDrink, setNewDrink] = useState({ name: '', img: '' });
+  const [drinkSaving, setDrinkSaving] = useState(false);
+  const [inbox, setInbox] = useState([]);
+
+  const SEED_DRINKS = [
+    { name: "London Thunder 🍺", img: "https://pintplease.s3.eu-west-1.amazonaws.com/post/original/post_7092510-218887532.jpg" },
+    { name: "High Tide 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2025_07_29/cefabe6c1ffb3161bff3d85fd12c0547_c_1500567857_raw.jpeg" },
+    { name: "Yorkshire Bitter 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2026_04_05/c8b9b78bd9797d0627837bef3a3fe04f_c_1560894340_raw.jpg" },
+    { name: "Mango Wave 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2026_02_26/4c08f6f70ce3038fe1d622f9ba30c8c1_c_1551928999_raw.jpg" },
+    { name: "Raspberry Ripple 🍺", img: "https://d31mezlzn8sqwg.cloudfront.net/media/products/17564/20190423094746704/450x450.jpg" },
+    { name: "Keller Pils 🍺", img: "https://images.squarespace-cdn.com/content/v1/5bf178d1697a98763203fc8c/1583174880697-U24IMPT6T3LBITTWFGEK/KellerPills-4+crop.jpg" },
+    { name: "Cruzcampo 🍺", img: "https://dramscotland.co.uk/wp-content/uploads/2023/04/FB5D4B16-A1CF-4C40-8CEB-9A7DF84149FD.jpeg" },
+    { name: "Crafty Apple 🍺", img: "https://www.docteurgabs.ch/media/1230/jaq_1974-bis.jpg?width=1920&height=640&crop=auto&scale=both&quality=80" },
+    { name: "Iron Brew 🍺", img: "https://vaultcity.co.uk/cdn/shop/files/IRONBREW202412-2-24web-res-3.jpg?v=1743116422" },
+    { name: "Paulaner Weiss 🍺", img: "https://www.cavedirect.com/media/catalog/product/cache/00658a5c18d5a0a6f08038a53ab1286c/w/e/weissbier_btl_3_1.jpg" },
+    { name: "Guinness 🍺", img: "https://api.freelogodesign.org/assets/blog/thumb/20200309091037750guinness-glass-with-logo_1176x840.jpg?t=638355680730000000" },
+    { name: "Belta Blonde 🍺", img: "https://northeastbeerreview.com/wp-content/uploads/2025/12/img_6272.jpg" },
+    { name: "Tight Rope 🍺", img: "https://pbs.twimg.com/media/FqjYAu-WYAI76fJ.jpg" },
+    { name: "Wanderer 🍺", img: "https://pintplease.s3.eu-west-1.amazonaws.com/post/original/post_4306165-108195920.jpeg" },
+    { name: "Hazy Faced Assassin 🍺", img: "https://images.squarespace-cdn.com/content/v1/628b71937f9fde6ff6d80096/5767ff33-a489-496b-9f1d-0b5c675e21b2/9dbc4af4-d0d1-bc3e-32eb-761c23cb25c8.jpg" },
+    { name: "Catch The Pigeon 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2025_07_11/ad3e71c0c8ba3e8674662ffa75a32b38_c_1495205526_raw.jpg" },
+  ];
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'drinks'), (snap) => {
@@ -274,6 +337,37 @@ export default function AdminPanel({ user }) {
     setInstaSaving(true);
     await setDoc(doc(db, 'settings', 'site'), { instagramFollowers: Number(instaCount) }, { merge: true });
     setInstaSaving(false);
+  }
+
+  useEffect(() => {
+    return onSnapshot(collection(db, 'suggestionDrinks'), (snap) => {
+      setSuggestionDrinks(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, 'suggestions'), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, (snap) => {
+      setInbox(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+  }, []);
+
+  async function addSuggestionDrink() {
+    if (!newDrink.name.trim() || !newDrink.img.trim()) return;
+    setDrinkSaving(true);
+    await addDoc(collection(db, 'suggestionDrinks'), { name: newDrink.name.trim(), img: newDrink.img.trim() });
+    setNewDrink({ name: '', img: '' });
+    setDrinkSaving(false);
+  }
+
+  async function deleteSuggestionDrink(id) {
+    await deleteDoc(doc(db, 'suggestionDrinks', id));
+  }
+
+  async function seedSuggestionDrinks() {
+    setDrinkSaving(true);
+    await Promise.all(SEED_DRINKS.map(d => addDoc(collection(db, 'suggestionDrinks'), d)));
+    setDrinkSaving(false);
   }
 
   // Open the add drink modal, resets the form and error state
@@ -425,6 +519,88 @@ export default function AdminPanel({ user }) {
             <button className="btn btn-primary" onClick={saveInstaCount} disabled={instaSaving}>
               {instaSaving ? 'Saving…' : 'Save'}
             </button>
+          </div>
+        </div>
+
+        <div className="ap-section">
+          <div className="ap-section-title">Random Drink Suggester ({suggestionDrinks.length})</div>
+          <div className="ap-suggestion-form">
+            <input
+              className="input-name"
+              placeholder="Drink name e.g. Guinness 🍺"
+              value={newDrink.name}
+              onChange={e => setNewDrink(d => ({ ...d, name: e.target.value }))}
+            />
+            <input
+              className="input-img"
+              placeholder="Image URL"
+              value={newDrink.img}
+              onChange={e => setNewDrink(d => ({ ...d, img: e.target.value }))}
+            />
+            <button className="btn btn-primary" onClick={addSuggestionDrink} disabled={drinkSaving || !newDrink.name.trim() || !newDrink.img.trim()}>
+              + Add
+            </button>
+          </div>
+          <div className="ap-table-container">
+            {suggestionDrinks.length === 0 ? (
+              <div className="ap-empty">
+                <p>No drinks yet.</p>
+                <button className="btn btn-accent" onClick={seedSuggestionDrinks} disabled={drinkSaving}>
+                  {drinkSaving ? 'Loading…' : 'Load original drinks'}
+                </button>
+              </div>
+            ) : (
+              <table className="ap-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: 48 }}></th>
+                    <th>Name</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {suggestionDrinks.map(drink => (
+                    <tr key={drink.id}>
+                      <td><img className="ap-suggestion-thumb" src={drink.img} alt={drink.name} /></td>
+                      <td>{drink.name}</td>
+                      <td>
+                        <div className="ap-actions">
+                          <button className="btn btn-danger btn-sm" onClick={() => deleteSuggestionDrink(drink.id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        <div className="ap-section">
+          <div className="ap-section-title">Suggestion Box ({inbox.length})</div>
+          <div className="ap-table-container">
+            {inbox.length === 0 ? (
+              <div className="ap-empty"><p>No suggestions yet.</p></div>
+            ) : (
+              inbox.map(s => (
+                <div className="ap-inbox-item" key={s.id}>
+                  <div style={{ flex: 1 }}>
+                    <div className="ap-inbox-text">{s.text}</div>
+                    <div className="ap-inbox-time">
+                      {s.createdAt?.toDate
+                        ? s.createdAt.toDate().toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                          })
+                        : 'Just now'}
+                    </div>
+                  </div>
+                  <button className="btn btn-danger btn-sm" onClick={() => deleteDoc(doc(db, 'suggestions', s.id))}>
+                    Delete
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

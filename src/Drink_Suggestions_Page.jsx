@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "./firebase";
 
 /*
   This file creates the Drink Sugesstion page;
@@ -15,7 +17,7 @@ import { useState } from "react";
 const styles = `
   /* Main page wrapper black backgound and center content */
   .suggestions-wrapper {
-    background: #000;
+    background: url('/bg.jpg') no-repeat center center / cover;
     min-height: 100vh;
     color: #fff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -25,6 +27,14 @@ const styles = `
     padding: 40px 20px;
     position: relative;
     overflow: hidden;
+  }
+
+  .suggestions-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 0;
   }
 
   /* Container that holds floating background drink emojis */
@@ -90,11 +100,17 @@ const styles = `
     font-size: clamp(2rem, 5vw, 3.4rem);
     font-weight: 900;
     text-transform: uppercase;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  /* Highlighted word in title */
   .suggestions-title span {
-    color: #F69A2C;
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* Subtitle under title */
@@ -196,33 +212,15 @@ const styles = `
 
 export default function SuggestionsPage() {
 
-  // STATE
-  // Stores the currently selected drink (null = none yet)
   const [suggestion, setSuggestion] = useState(null);
-  // Controls whether button animation is active
   const [animateBtn, setAnimateBtn] = useState(false);
+  const [drinks, setDrinks] = useState([]);
 
-
-  // DATA (LIST)
-  // List of drinks with names and images, drinks can be added or removed by owner editor
-  const drinks = [
-    { name: "London Thunder 🍺", img: "https://pintplease.s3.eu-west-1.amazonaws.com/post/original/post_7092510-218887532.jpg" },
-    { name: "High Tide 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2025_07_29/cefabe6c1ffb3161bff3d85fd12c0547_c_1500567857_raw.jpeg" },
-    { name: "Yorkshire Bitter 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2026_04_05/c8b9b78bd9797d0627837bef3a3fe04f_c_1560894340_raw.jpg" },
-    { name: "Mango Wave 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2026_02_26/4c08f6f70ce3038fe1d622f9ba30c8c1_c_1551928999_raw.jpg" },
-    { name: "Raspberry Ripple 🍺", img: "https://d31mezlzn8sqwg.cloudfront.net/media/products/17564/20190423094746704/450x450.jpg" },
-    { name: "Keller Pils 🍺", img: "https://images.squarespace-cdn.com/content/v1/5bf178d1697a98763203fc8c/1583174880697-U24IMPT6T3LBITTWFGEK/KellerPills-4+crop.jpg" },
-    { name: "Cruzcampo 🍺", img: "https://dramscotland.co.uk/wp-content/uploads/2023/04/FB5D4B16-A1CF-4C40-8CEB-9A7DF84149FD.jpeg" },
-    { name: "Crafty Apple 🍺", img: "https://www.docteurgabs.ch/media/1230/jaq_1974-bis.jpg?width=1920&height=640&crop=auto&scale=both&quality=80" },
-    { name: "Iron Brew 🍺", img: "https://vaultcity.co.uk/cdn/shop/files/IRONBREW202412-2-24web-res-3.jpg?v=1743116422" },
-    { name: "Paulaner Weiss 🍺", img: "https://www.cavedirect.com/media/catalog/product/cache/00658a5c18d5a0a6f08038a53ab1286c/w/e/weissbier_btl_3_1.jpg" },
-    { name: "Guinness 🍺", img: "https://api.freelogodesign.org/assets/blog/thumb/20200309091037750guinness-glass-with-logo_1176x840.jpg?t=638355680730000000" },
-    { name: "Belta Blonde 🍺", img: "https://northeastbeerreview.com/wp-content/uploads/2025/12/img_6272.jpg" },
-    { name: "Tight Rope 🍺", img: "https://pbs.twimg.com/media/FqjYAu-WYAI76fJ.jpg" },
-    { name: "Wanderer 🍺", img: "https://pintplease.s3.eu-west-1.amazonaws.com/post/original/post_4306165-108195920.jpeg" },
-    { name: "Hazy Faced Assassin 🍺", img: "https://images.squarespace-cdn.com/content/v1/628b71937f9fde6ff6d80096/5767ff33-a489-496b-9f1d-0b5c675e21b2/9dbc4af4-d0d1-bc3e-32eb-761c23cb25c8.jpg" },
-    { name: "Catch The Pigeon 🍺", img: "https://images.untp.beer/crop?width=640&height=640&stripmeta=true&url=https://untappd.s3.amazonaws.com/photos/2025_07_11/ad3e71c0c8ba3e8674662ffa75a32b38_c_1495205526_raw.jpg" }
-  ];
+  useEffect(() => {
+    return onSnapshot(collection(db, 'suggestionDrinks'), (snap) => {
+      setDrinks(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+  }, []);
 
 
   // FUNCTION: PICK RANDOM DRINK

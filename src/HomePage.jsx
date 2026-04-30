@@ -4,7 +4,7 @@ import { db } from './firebase';
 
 const styles = `
   .hp-wrapper {
-    background-color: #000000;
+    background: url('/bg.jpg') no-repeat center center / cover;
     min-height: 100vh;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #ffffff;
@@ -13,6 +13,27 @@ const styles = `
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
+    position: relative;
+  }
+
+  .hp-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 0;
+  }
+
+  .hp-wrapper > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hp-logo {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: -12px;
   }
 
   .hp-logo-bar {
@@ -31,10 +52,17 @@ const styles = `
     text-align: center;
     line-height: 1;
     margin: 0 0 12px;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hp-title span {
-    color: #F69A2C;
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hp-tagline {
@@ -59,32 +87,42 @@ const styles = `
   .hp-card {
     background: #1A1A1A;
     border: 1px solid #2a2a2a;
+    border-left: none;
     border-radius: 8px;
     padding: 36px 32px;
-    flex: 1 1 280px;
-    max-width: 340px;
     cursor: pointer;
     text-align: left;
     text-decoration: none;
     color: inherit;
     display: block;
-    transition: border-color 0.2s, background 0.2s;
+    transition: background 0.2s;
     box-sizing: border-box;
-
+    position: relative;
     flex: 1 1 calc(50% - 20px);
     max-width: calc(50% - 20px);
   }
-  
-  @media (max-width: 600px) {
-  .hp-card {
-    flex: 1 1 100%;
-    max-width: 100%;
+
+  .hp-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    border-radius: 8px 0 0 8px;
   }
-}
+
+  @media (max-width: 600px) {
+    .hp-card {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
 
   .hp-card:hover {
-    border-color: #931D0A;
     background: #1f1a1a;
+    border-color: #333;
   }
 
   .hp-card-icon {
@@ -98,11 +136,17 @@ const styles = `
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-bottom: 8px;
-    color: #ffffff;
+    background: linear-gradient(180deg, #e8353a 0%, #F69A2C 55%, #f5c518 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hp-card-title span {
-    color: #F69A2C;
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hp-card-desc {
@@ -138,22 +182,6 @@ const styles = `
     color: #666;
   }
 
-  .hp-dev-note {
-    margin-top: 40px;
-    padding: 14px 20px;
-    border: 1px dashed #931D0A;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    color: #aaa;
-    text-align: center;
-    max-width: 500px;
-    line-height: 1.5;
-  }
-
-  .hp-dev-note strong {
-    color: #F69A2C;
-  }
-
   .hp-insta {
     display: inline-flex;
     align-items: center;
@@ -174,6 +202,24 @@ const styles = `
     color: #F69A2C;
     font-weight: 800;
   }
+
+  .hp-insta-cta {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: #666;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  .hp-insta-cta a {
+    color: #F69A2C;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .hp-insta-cta a:hover {
+    color: #fff;
+  }
 `;
 
 export default function HomePage() {
@@ -189,19 +235,16 @@ export default function HomePage() {
     <>
       <style>{styles}</style>
       <div className="hp-wrapper">
-        <div className="hp-logo-bar" />
+        <img src="/logo.png" alt="The Last Resort" className="hp-logo" />
 
         <h1 className="hp-title">
           The Last <span>Resort</span>
         </h1>
-        <p className="hp-tagline">Your second living room
-except with draught beer
-(and wine, spirits,
-snacks, vibes, disco ball etc.)</p>
+        <p className="hp-tagline">Your second living room · Heaton, Newcastle</p>
 
         <div className="hp-cards">
           <a className="hp-card" href="#leaderboard">
-            <div className="hp-card-icon">🏆</div>
+            <img src="/logo.png" alt="The Last Resort" style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '12px' }} />
             <div className="hp-card-title">Drink <span>Leaderboard</span></div>
             <div className="hp-card-desc">
               See which drinks the regulars are voting for this month. Live rankings, updated in real time.
@@ -231,17 +274,18 @@ snacks, vibes, disco ball etc.)</p>
         </div>
 
         {instaCount !== null && (
-          <a className="hp-insta" href="https://www.instagram.com/weareyourlastresort/" target="_blank" rel="noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24c3.259 0 3.667-.014 4.947-.072 1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947 0-3.259-.014-3.667-.072-4.947-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-            </svg>
-            <span className="hp-insta-count">{Number(instaCount).toLocaleString()}</span> followers
-          </a>
+          <>
+            <a className="hp-insta" href="https://www.instagram.com/weareyourlastresort/" target="_blank" rel="noreferrer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24c3.259 0 3.667-.014 4.947-.072 1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947 0-3.259-.014-3.667-.072-4.947-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+              </svg>
+              <span className="hp-insta-count">{Number(instaCount).toLocaleString()}</span> followers
+            </a>
+            <p className="hp-insta-cta">
+              Stay in the loop — <a href="https://www.instagram.com/weareyourlastresort/" target="_blank" rel="noreferrer">follow us on Instagram</a> for events, offers & good vibes.
+            </p>
+          </>
         )}
-
-        <div className="hp-dev-note">
-          <strong>Note to the group:</strong> Whoever is editing the home page — feel free to change the design, copy, or anything else you think would make it better. This is just a starting point to get us going.
-        </div>
 
         <p className="hp-footer">
           &copy; The Last Resort &nbsp;·&nbsp;{' '}
