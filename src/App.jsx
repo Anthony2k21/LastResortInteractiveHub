@@ -6,6 +6,7 @@ import AdminLogin from './AdminLogin';
 import AdminPanel from './AdminPanel';
 import HomePage from './HomePage';
 import SuggestionsPage from "./Drink_Suggestions_Page";
+import LightingControl from './LightingControl';
 
 function App() {
   const [hash, setHash] = useState(window.location.hash);
@@ -34,10 +35,64 @@ function App() {
     return <DrinkLeaderboard />;
   }
 
-
   if (hash === '#drink_suggestion') {
-  return <SuggestionsPage />;
+    return <SuggestionsPage />;
   }
+
+  // ── NEW: lighting page ──
+  if (hash === '#lighting') {
+    return (
+      <div style={{
+        background: '#000',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 20px',
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+      }}>
+        <div style={{ width: '100%', maxWidth: '560px' }}>
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '32px',
+          }}>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 6vw, 3rem)',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              letterSpacing: '-0.02em',
+              color: '#fff',
+              margin: '0 0 8px',
+            }}>
+              Venue <span style={{ color: '#F69A2C' }}>Lighting</span>
+            </h1>
+            <p style={{ color: '#666', fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Set the atmosphere
+            </p>
+          </div>
+
+          <LightingControl />
+
+          <div style={{ textAlign: 'center', marginTop: '28px' }}>
+            <a
+              href="#home"
+              style={{
+                color: '#444',
+                fontSize: '0.8rem',
+                textDecoration: 'none',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              ← Back home
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return <HomePage />;
 }
 

@@ -61,8 +61,6 @@ const styles = `
     border: 1px solid #2a2a2a;
     border-radius: 8px;
     padding: 36px 32px;
-    flex: 1 1 280px;
-    max-width: 340px;
     cursor: pointer;
     text-align: left;
     text-decoration: none;
@@ -70,21 +68,26 @@ const styles = `
     display: block;
     transition: border-color 0.2s, background 0.2s;
     box-sizing: border-box;
-
     flex: 1 1 calc(50% - 20px);
     max-width: calc(50% - 20px);
   }
-  
+
   @media (max-width: 600px) {
-  .hp-card {
-    flex: 1 1 100%;
-    max-width: 100%;
+    .hp-card {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
   }
-}
 
   .hp-card:hover {
     border-color: #931D0A;
     background: #1f1a1a;
+  }
+
+  /* Lighting card gets a subtle glow on hover */
+  .hp-card.lighting:hover {
+    border-color: #F69A2C;
+    background: #1a1a14;
   }
 
   .hp-card-icon {
@@ -213,13 +216,20 @@ snacks, vibes, disco ball etc.)</p>
             <div className="hp-card-icon">🍺</div>
             <div className="hp-card-title"><span>Random Drink Suggester</span></div>
             <div className="hp-card-desc">
-              Can't decide? want to try something new?
+              Can't decide? Want to try something new?
             </div>
-            <span className="hp-card-cta">See whats tasty! →</span>
+            <span className="hp-card-cta">See what's tasty! →</span>
           </a>
-          
-                 
 
+          {/* ── NEW: Lighting card ── */}
+          <a className="hp-card lighting" href="#lighting">
+            <div className="hp-card-icon">💡</div>
+            <div className="hp-card-title">Venue <span>Lighting</span></div>
+            <div className="hp-card-desc">
+              Set the mood. Choose a colour preset to change the atmosphere of the bar.
+            </div>
+            <span className="hp-card-cta">Change the lights →</span>
+          </a>
         </div>
 
         {instaCount !== null && (
