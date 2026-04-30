@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The Last Resort - Music Requests</title>
+
+    <!-- Page refreshes every 3 seconds to allow fast responce times -->
+
+    <meta http-equiv="refresh" content="3">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 30px;
+            font-size: 42px;
+            color: #f39c12;
+        }
+
+        .count {
+            margin: 20px;
+            background: #c0392b;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .card {
+            background: #222;
+            margin: 15px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+            text-align: left;
+            border-left: 5px solid #f39c12;
+        }
+
+        .song {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .artist {
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        a {
+            color: #f39c12;
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #c0392b;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #a93226;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Locals Requests</h1>
+
+    <div class="count">
+        Total Requests: {{ suggestions|length }}
+    </div>
+
+    {% if next_song %}
+        <div class="card">
+            <h2>Next in Queue</h2>
+            <div class="song">{{ next_song.song }}</div>
+            <div class="artist">by {{ next_song.artist }}</div>
+
+            {% if next_song.youtube %}
+                <a href="{{ next_song.youtube }}" target="_blank">Open YouTube</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% for s in suggestions %}
+        <div class="card">
+            <div class="song">{{ s.song }}</div>
+            <div class="artist">by {{ s.artist }}</div>
+
+            {% if s.youtube %}
+                <a href="{{ s.youtube }}" target="_blank">Open YouTube</a>
+            {% endif %}
+
+            <form method="POST" action="/choose/{{ s.id }}">
+                <button type="submit">Choose Song</button>
+            </form>
+        </div>
+    {% endfor %}
+
+    <script>
+        let lastCount = Number(localStorage.getItem("ownerCount") || 0);
+        let currentCount = Number("{{ suggestions|length }}");
+
+        if (currentCount > lastCount) {
+            document.body.style.backgroundColor = "#7b0000";
+
+            setTimeout(() => {
+                document.body.style.backgroundColor = "#111";
+            }, 800);
+
+            let audio = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
+            audio.play().catch(() => {});
+        }
+
+        localStorage.setItem("ownerCount", currentCount);
+    </script>
+
+</body>
+</html>
