@@ -6,16 +6,22 @@ import { auth, db } from './firebase';
 const CATEGORIES = ['Signature', 'Cocktail', 'Craft Beer', 'Classic'];
 
 const DEMO_DRINKS = [
-  { name: 'The Last Resort',  category: 'Signature',  votes: 312, price: '£9.50',  isNew: false },
-  { name: 'Crimson Wreckage', category: 'Cocktail',   votes: 278, price: '£8.00',  isNew: false },
-  { name: 'Bitter End',       category: 'Craft Beer', votes: 241, price: '£5.50',  isNew: false },
-  { name: 'Dark Descent',     category: 'Cocktail',   votes: 199, price: '£8.50',  isNew: true  },
-  { name: 'Amber Alert',      category: 'Signature',  votes: 187, price: '£9.00',  isNew: false },
-  { name: 'Negroni Noir',     category: 'Classic',    votes: 165, price: '£7.50',  isNew: false },
-  { name: 'Havana Collapse',  category: 'Cocktail',   votes: 143, price: '£8.00',  isNew: true  },
-  { name: 'Purgatory Pale',   category: 'Craft Beer', votes: 121, price: '£5.00',  isNew: false },
-  { name: 'Mezcal Oblivion',  category: 'Signature',  votes: 99,  price: '£10.00', isNew: false },
-  { name: 'The Final Round',  category: 'Classic',    votes: 82,  price: '£7.00',  isNew: false },
+  { name: 'London Thunder',       category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'High Tide',            category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'Yorkshire Bitter',     category: 'Craft Beer', votes: 0, price: '£5.00', isNew: false },
+  { name: 'Mango Wave',           category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'Raspberry Ripple',     category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'Keller Pils',          category: 'Craft Beer', votes: 0, price: '£5.00', isNew: false },
+  { name: 'Cruzcampo',            category: 'Classic',    votes: 0, price: '£4.80', isNew: false },
+  { name: 'Crafty Apple',         category: 'Classic',    votes: 0, price: '£4.80', isNew: false },
+  { name: 'Iron Brew',            category: 'Craft Beer', votes: 0, price: '£5.50', isNew: true  },
+  { name: 'Paulaner Weiss',       category: 'Classic',    votes: 0, price: '£5.20', isNew: false },
+  { name: 'Guinness',             category: 'Classic',    votes: 0, price: '£5.00', isNew: false },
+  { name: 'Belta Blonde',         category: 'Craft Beer', votes: 0, price: '£5.50', isNew: true  },
+  { name: 'Tight Rope',           category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'Wanderer',             category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
+  { name: 'Hazy Faced Assassin',  category: 'Craft Beer', votes: 0, price: '£5.80', isNew: false },
+  { name: 'Catch The Pigeon',     category: 'Craft Beer', votes: 0, price: '£5.50', isNew: false },
 ];
 
 const emptyForm = { name: '', category: 'Signature', votes: '', price: '£', isNew: false };
