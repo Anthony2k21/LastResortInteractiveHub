@@ -86,6 +86,10 @@ const pageStyles = `
   }
 
   .feat-back:hover { color: #F69A2C; }
+
+  @media (max-width: 600px) {
+    .feat-wrapper { padding: 24px 16px 40px; }
+  }
 `
 
 function App() {

@@ -103,10 +103,19 @@ const styles = `
   }
 
   @media (max-width: 600px) {
+    .hp-content { padding: 24px 16px 40px; }
+    .hp-logo { width: 100px; height: 100px; margin-bottom: 12px; }
+    .hp-tagline { font-size: 0.75rem; margin-bottom: 28px; letter-spacing: 0.1em; }
+    .hp-cards { gap: 12px; }
     .hp-card {
       flex: 1 1 100%;
       max-width: 100%;
+      padding: 22px 18px;
     }
+    .hp-card-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .hp-card-cta { margin-top: 12px; }
+    .hp-insta { margin-top: 28px; }
+    .hp-footer { margin-top: 32px; }
   }
 
   .hp-card:hover {

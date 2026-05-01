@@ -158,8 +158,13 @@ const styles = `
   .feat-back:hover { color: #F69A2C; }
 
   @media (max-width: 700px) {
-    .ds-content { flex-direction: column; text-align: center; }
+    .ds-wrapper { padding: 24px 16px 40px; justify-content: flex-start; }
+    .ds-header { margin-bottom: 24px; }
+    .ds-card { padding: 22px 18px; }
+    .ds-content { flex-direction: column-reverse; text-align: center; gap: 20px; }
     .ds-image-wrap { width: 100%; height: 200px; }
+    .ds-button { width: 100%; }
+    .ds-result { font-size: 1.3rem; }
   }
 `;
 

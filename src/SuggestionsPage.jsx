@@ -176,6 +176,13 @@ const styles = `
   }
 
   .feat-back:hover { color: #F69A2C; }
+
+  @media (max-width: 600px) {
+    .sg-wrapper { padding: 24px 16px 40px; }
+    .sg-header { margin-bottom: 24px; }
+    .sg-form-container { padding: 20px 16px; }
+    .sg-submit { width: 100%; }
+  }
 `;
 
 export default function SuggestionsPage() {
