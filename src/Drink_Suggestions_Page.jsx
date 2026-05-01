@@ -160,6 +160,9 @@ const styles = `
   @media (max-width: 700px) {
     .ds-content { flex-direction: column; text-align: center; }
     .ds-image-wrap { width: 100%; height: 200px; }
+    .ds-wrapper { padding: 28px 16px 48px; justify-content: flex-start; }
+    .ds-header { margin-bottom: 24px; }
+    .ds-card { padding: 24px 20px; }
   }
 `;
 

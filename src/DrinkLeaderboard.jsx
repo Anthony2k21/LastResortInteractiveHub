@@ -260,7 +260,11 @@ const styles = `
   @media (max-width: 600px) {
     .lb-table thead th.hide-mobile,
     .lb-table td.hide-mobile { display: none; }
-    .lb-table td, .lb-table thead th { padding: 12px; }
+    .lb-table td, .lb-table thead th { padding: 10px 12px; }
+    .lb-wrapper { padding: 28px 16px 48px; }
+    .lb-header { margin-bottom: 24px; }
+    .lb-filters { gap: 8px; margin-bottom: 20px; }
+    .lb-filter-btn { padding: 7px 14px; font-size: 0.78rem; }
   }
 `;
 
@@ -337,15 +341,19 @@ export default function DrinkLeaderboard() {
                       </div>
                     </td>
                     <td>
-                      <div className="drink-name">
-                        {drink.name}
-                        {drink.isNew && <span className="badge-new">New</span>}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                        <div>
+                          <div className="drink-name">
+                            {drink.name}
+                            {drink.isNew && <span className="badge-new">New</span>}
+                          </div>
+                          <div className="drink-category">{drink.category}</div>
+                        </div>
+                        <button className="upvote-btn" onClick={() => handleVote(drink.id)}>▲</button>
                       </div>
-                      <div className="drink-category">{drink.category}</div>
                     </td>
                     <td className="hide-mobile">
                       <div className="votes-bar-wrap">
-                        <button className="upvote-btn" onClick={() => handleVote(drink.id)}>▲</button>
                         <div className="votes-bar-bg">
                           <div
                             className={`votes-bar-fill${rank === 1 ? ' top' : ''}`}
