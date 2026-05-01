@@ -106,7 +106,12 @@ const styles = `
     .hp-card {
       flex: 1 1 100%;
       max-width: 100%;
+      padding: 24px 20px;
     }
+    .hp-content { padding: 28px 16px 48px; }
+    .hp-logo { width: 110px; height: 110px; margin-bottom: 14px; }
+    .hp-tagline { margin-bottom: 32px; font-size: 0.78rem; }
+    .hp-cards { gap: 12px; }
   }
 
   .hp-card:hover {
