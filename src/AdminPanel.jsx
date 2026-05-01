@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
 const CATEGORIES = ['Signature', 'Cocktail', 'Craft Beer', 'Classic'];
@@ -241,6 +241,19 @@ const styles = `
   }
   .ap-insta-row input:focus { outline: none; border-color: #F69A2C; }
   .ap-insta-label { font-size: 0.82rem; color: #888; flex: 1; }
+
+  .ap-inbox-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .ap-inbox-item:last-child { border-bottom: none; }
+  .ap-inbox-text { font-size: 0.9rem; color: #fff; line-height: 1.5; flex: 1; }
+  .ap-inbox-time { font-size: 0.75rem; color: #555; margin-top: 4px; }
+  .ap-inbox-empty { text-align: center; padding: 40px 20px; color: #555; font-size: 0.9rem; }
 `;
 
 export default function AdminPanel({ user }) {
@@ -253,6 +266,7 @@ export default function AdminPanel({ user }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [instaCount, setInstaCount] = useState('');
   const [instaSaving, setInstaSaving] = useState(false);
+  const [inbox, setInbox] = useState([]);
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'drinks'), (snap) => {
@@ -268,6 +282,11 @@ export default function AdminPanel({ user }) {
     getDoc(doc(db, 'settings', 'site')).then(snap => {
       if (snap.exists()) setInstaCount(snap.data().instagramFollowers ?? '');
     });
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, 'suggestions'), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, snap => setInbox(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
   }, []);
 
   async function saveInstaCount() {
@@ -425,6 +444,37 @@ export default function AdminPanel({ user }) {
             <button className="btn btn-primary" onClick={saveInstaCount} disabled={instaSaving}>
               {instaSaving ? 'Saving…' : 'Save'}
             </button>
+          </div>
+        </div>
+
+        <div className="ap-section">
+          <div className="ap-section-title">Suggestion Box ({inbox.length})</div>
+          <div className="ap-table-container">
+            {inbox.length === 0 ? (
+              <div className="ap-inbox-empty">No suggestions yet.</div>
+            ) : (
+              inbox.map(s => (
+                <div className="ap-inbox-item" key={s.id}>
+                  <div>
+                    <div className="ap-inbox-text">{s.text}</div>
+                    <div className="ap-inbox-time">
+                      {s.createdAt?.toDate
+                        ? s.createdAt.toDate().toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                          })
+                        : 'Just now'}
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => deleteDoc(doc(db, 'suggestions', s.id))}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

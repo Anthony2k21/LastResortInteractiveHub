@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, increment } from 'firebase/firestore';
 import { db } from './firebase';
 
 const styles = `
@@ -239,6 +239,24 @@ const styles = `
 
   .feat-back:hover { color: #F69A2C; }
 
+  .upvote-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1;
+  }
+  .upvote-btn:hover {
+    color: #F69A2C;
+    border-color: #F69A2C;
+    background: rgba(246,154,44,0.08);
+  }
+
   @media (max-width: 600px) {
     .lb-table thead th.hide-mobile,
     .lb-table td.hide-mobile { display: none; }
@@ -252,6 +270,10 @@ const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 export default function DrinkLeaderboard() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [drinks, setDrinks] = useState([]);
+
+  async function handleVote(id) {
+    await updateDoc(doc(db, 'drinks', id), { votes: increment(1) });
+  }
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'drinks'), (snap) => {
@@ -323,6 +345,7 @@ export default function DrinkLeaderboard() {
                     </td>
                     <td className="hide-mobile">
                       <div className="votes-bar-wrap">
+                        <button className="upvote-btn" onClick={() => handleVote(drink.id)}>▲</button>
                         <div className="votes-bar-bg">
                           <div
                             className={`votes-bar-fill${rank === 1 ? ' top' : ''}`}
