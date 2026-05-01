@@ -3,59 +3,69 @@ import { collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 
 import { db } from './firebase';
 
 const styles = `
-  :root {
-    --colour-primary: #931D0A;
-    --colour-background: #000000;
-    --colour-text: #FFFFFF;
-    --colour-accent: #F69A2C;
-    --colour-surface: #1A1A1A;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .sg-bg {
+    position: fixed;
+    inset: 0;
+    background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
+    background-size: cover;
+    background-position: center top;
+    z-index: 0;
   }
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  .sg-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
   }
 
   .sg-wrapper {
-    background-color: var(--colour-background);
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: var(--colour-text);
-    padding: 40px 20px;
+    color: #fff;
+    padding: 48px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .sg-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
 
-  .sg-header h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
+  .sg-title {
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
     letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 8px;
+    color: #fff;
+  }
+
+  .sg-title span { color: #F69A2C; }
+
+  .sg-subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  .sg-header h1 span {
-    color: var(--colour-accent);
-  }
-
-  .sg-header p {
-    color: #aaaaaa;
-    margin-top: 8px;
-    font-size: 0.95rem;
-    font-weight: 400;
-  }
-
   .sg-form-container {
+    width: 100%;
     max-width: 860px;
-    margin: 0 auto 32px;
-    background: var(--colour-surface);
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid #2a2a2a;
+    background: rgba(20,20,20,0.85);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(6px);
   }
 
   .sg-form-container label {
@@ -64,34 +74,33 @@ const styles = `
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #aaa;
+    color: rgba(255,255,255,0.5);
     margin-bottom: 10px;
   }
 
   .sg-textarea {
     width: 100%;
-    background: #000;
-    border: 1px solid #333;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 4px;
-    color: var(--colour-text);
+    color: #fff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 0.95rem;
     padding: 14px;
     resize: vertical;
     min-height: 120px;
-    box-sizing: border-box;
     transition: border-color 0.2s;
   }
 
   .sg-textarea:focus {
     outline: none;
-    border-color: var(--colour-primary);
+    border-color: #931D0A;
   }
 
   .sg-submit {
     margin-top: 16px;
-    background: var(--colour-primary);
-    color: var(--colour-text);
+    background: #931D0A;
+    color: #fff;
     border: none;
     border-radius: 4px;
     padding: 12px 28px;
@@ -104,18 +113,12 @@ const styles = `
     transition: background 0.2s;
   }
 
-  .sg-submit:hover {
-    background: #b02209;
-  }
-
-  .sg-submit:disabled {
-    background: #333;
-    cursor: not-allowed;
-  }
+  .sg-submit:hover { background: #b02209; }
+  .sg-submit:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; }
 
   .sg-success {
     margin-top: 12px;
-    color: var(--colour-accent);
+    color: #F69A2C;
     font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -123,63 +126,56 @@ const styles = `
   }
 
   .sg-list-container {
+    width: 100%;
     max-width: 860px;
-    margin: 0 auto;
-    background: var(--colour-surface);
-    border-radius: 6px;
+    background: rgba(20,20,20,0.85);
+    border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px);
   }
 
   .sg-list-header {
-    background: var(--colour-primary);
+    background: #931D0A;
     padding: 14px 20px;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--colour-text);
+    color: #fff;
   }
 
   .sg-item {
     padding: 18px 20px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
     font-size: 0.95rem;
     line-height: 1.5;
-    color: var(--colour-text);
+    color: #fff;
     transition: background 0.15s;
   }
 
-  .sg-item:last-child {
-    border-bottom: none;
-  }
-
-  .sg-item:hover {
-    background: #242424;
-  }
+  .sg-item:last-child { border-bottom: none; }
+  .sg-item:hover { background: rgba(255,255,255,0.04); }
 
   .sg-item-time {
     font-size: 0.75rem;
-    color: #555;
+    color: rgba(255,255,255,0.3);
     margin-top: 6px;
-    letter-spacing: 0.03em;
   }
 
-  .sg-footer {
-    text-align: center;
-    margin-top: 24px;
-    color: #555;
+  /* consistent back button */
+  .feat-back {
+    display: inline-block;
+    margin-top: 40px;
+    color: rgba(255,255,255,0.45);
     font-size: 0.8rem;
-  }
-
-  .sg-footer a {
-    color: #333;
     text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.15s;
   }
 
-  .sg-footer a:hover {
-    color: #666;
-  }
+  .feat-back:hover { color: #F69A2C; }
 `;
 
 export default function SuggestionsPage() {
@@ -188,7 +184,6 @@ export default function SuggestionsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
 
-  // handles suggestions documents being updated
   useEffect(() => {
     const q = query(collection(db, 'suggestions'), orderBy('createdAt', 'desc'));
     const unsub = onSnapshot(q, (snap) => {
@@ -197,7 +192,6 @@ export default function SuggestionsPage() {
     return unsub;
   }, []);
 
-  // handles submissions and timestamps it
   const handleSubmit = async () => {
     if (!text.trim()) return;
     setSubmitting(true);
@@ -214,11 +208,13 @@ export default function SuggestionsPage() {
   return (
     <>
       <style>{styles}</style>
+      <div className="sg-bg" />
       <div className="sg-wrapper">
-        <header className="sg-header">
-          <h1>Make a <span>Suggestion</span></h1>
-          <p>Got an idea? We're all ears.</p>
-        </header>
+
+        <div className="sg-header">
+          <h1 className="sg-title">Make a <span>Suggestion</span></h1>
+          <p className="sg-subtitle">Got an idea? We're all ears</p>
+        </div>
 
         <div className="sg-form-container">
           <label htmlFor="sg-input">Your suggestion</label>
@@ -255,9 +251,8 @@ export default function SuggestionsPage() {
           ))}
         </div>
 
-        <p className="sg-footer">
-          <a href="#home">Home</a>
-        </p>
+        <a className="feat-back" href="#home">← Back Home</a>
+
       </div>
     </>
   );

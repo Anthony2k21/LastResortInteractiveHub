@@ -3,49 +3,58 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 const styles = `
-  :root {
-    --colour-primary: #931D0A;
-    --colour-background: #000000;
-    --colour-text: #FFFFFF;
-    --colour-accent: #F69A2C;
-    --colour-surface: #1A1A1A;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .lb-bg {
+    position: fixed;
+    inset: 0;
+    background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
+    background-size: cover;
+    background-position: center top;
+    z-index: 0;
   }
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  .lb-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
   }
 
   .lb-wrapper {
-    background-color: var(--colour-background);
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: var(--colour-text);
-    padding: 40px 20px;
+    color: #fff;
+    padding: 48px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .lb-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
 
   .lb-header h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 900;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    line-height: 1.1;
+    margin: 0 0 8px;
+    color: #fff;
   }
 
-  .lb-header h1 span {
-    color: var(--colour-accent);
-  }
+  .lb-header h1 span { color: #F69A2C; }
 
   .lb-header p {
-    color: #aaaaaa;
-    margin-top: 8px;
-    font-size: 0.95rem;
-    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .lb-filters {
@@ -53,13 +62,15 @@ const styles = `
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
+    width: 100%;
+    max-width: 860px;
   }
 
   .lb-filter-btn {
-    background: var(--colour-surface);
-    color: var(--colour-text);
-    border: 1px solid #333;
+    background: rgba(20,20,20,0.8);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
     padding: 8px 20px;
     border-radius: 4px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -68,28 +79,23 @@ const styles = `
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    transition: background 0.2s, border-color 0.2s;
   }
 
   .lb-filter-btn:hover,
   .lb-filter-btn.active {
-    background: var(--colour-primary);
-    border-color: var(--colour-primary);
-    color: var(--colour-text);
-  }
-
-  .lb-filter-btn:focus {
-    outline: 2px solid var(--colour-accent);
-    outline-offset: 2px;
+    background: #931D0A;
+    border-color: #931D0A;
   }
 
   .lb-table-container {
+    width: 100%;
     max-width: 860px;
-    margin: 0 auto;
-    background: var(--colour-surface);
-    border-radius: 6px;
+    background: rgba(20,20,20,0.85);
+    border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px);
   }
 
   .lb-table {
@@ -97,9 +103,7 @@ const styles = `
     border-collapse: collapse;
   }
 
-  .lb-table thead {
-    background: var(--colour-primary);
-  }
+  .lb-table thead { background: #931D0A; }
 
   .lb-table thead th {
     padding: 14px 20px;
@@ -108,31 +112,23 @@ const styles = `
     text-transform: uppercase;
     letter-spacing: 0.1em;
     text-align: left;
-    color: var(--colour-text);
+    color: #fff;
   }
 
-  .lb-table thead th.right {
-    text-align: right;
-  }
+  .lb-table thead th.right { text-align: right; }
 
   .lb-table tbody tr {
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
     transition: background 0.15s;
   }
 
-  .lb-table tbody tr:last-child {
-    border-bottom: none;
-  }
-
-  .lb-table tbody tr:hover {
-    background: #242424;
-  }
+  .lb-table tbody tr:last-child { border-bottom: none; }
+  .lb-table tbody tr:hover { background: rgba(255,255,255,0.05); }
 
   .lb-table td {
     padding: 14px 20px;
     font-size: 0.95rem;
-    font-weight: 400;
-    color: var(--colour-text);
+    color: #fff;
   }
 
   .lb-table td.right {
@@ -144,7 +140,6 @@ const styles = `
     display: flex;
     align-items: center;
     gap: 10px;
-    min-width: 50px;
   }
 
   .rank-number {
@@ -161,13 +156,11 @@ const styles = `
     text-align: center;
   }
 
-  .drink-name {
-    font-weight: 600;
-  }
+  .drink-name { font-weight: 700; }
 
   .drink-category {
     font-size: 0.78rem;
-    color: #888;
+    color: rgba(255,255,255,0.45);
     margin-top: 2px;
   }
 
@@ -180,7 +173,7 @@ const styles = `
   .votes-bar-bg {
     flex: 1;
     height: 6px;
-    background: #333;
+    background: rgba(255,255,255,0.1);
     border-radius: 3px;
     min-width: 80px;
   }
@@ -188,29 +181,27 @@ const styles = `
   .votes-bar-fill {
     height: 6px;
     border-radius: 3px;
-    background: var(--colour-primary);
+    background: #931D0A;
     transition: width 0.4s ease;
   }
 
-  .votes-bar-fill.top {
-    background: var(--colour-accent);
-  }
+  .votes-bar-fill.top { background: #F69A2C; }
 
   .votes-count {
     font-size: 0.85rem;
-    color: #aaa;
+    color: rgba(255,255,255,0.5);
     min-width: 30px;
     text-align: right;
   }
 
   .price-tag {
-    color: var(--colour-accent);
+    color: #F69A2C;
     font-weight: 700;
   }
 
   .badge-new {
     display: inline-block;
-    background: var(--colour-accent);
+    background: #F69A2C;
     color: #000;
     font-size: 0.65rem;
     font-weight: 800;
@@ -224,34 +215,44 @@ const styles = `
 
   .lb-footer {
     text-align: center;
-    margin-top: 24px;
-    color: #555;
+    margin-top: 20px;
+    color: rgba(255,255,255,0.3);
     font-size: 0.8rem;
   }
 
+  .lb-footer a {
+    color: rgba(255,255,255,0.25);
+    text-decoration: none;
+  }
+
+  /* consistent back button */
+  .feat-back {
+    display: inline-block;
+    margin-top: 40px;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.8rem;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+
+  .feat-back:hover { color: #F69A2C; }
+
   @media (max-width: 600px) {
     .lb-table thead th.hide-mobile,
-    .lb-table td.hide-mobile {
-      display: none;
-    }
-
-    .lb-table td,
-    .lb-table thead th {
-      padding: 12px 12px;
-    }
+    .lb-table td.hide-mobile { display: none; }
+    .lb-table td, .lb-table thead th { padding: 12px; }
   }
 `;
 
-
 const CATEGORIES = ['All', 'Signature', 'Cocktail', 'Craft Beer', 'Classic'];
-
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 export default function DrinkLeaderboard() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [drinks, setDrinks] = useState([]);
 
-  // Listen to real-time updates from Firestore
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'drinks'), (snap) => {
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -261,7 +262,6 @@ export default function DrinkLeaderboard() {
     return unsub;
   }, []);
 
-  // Filter drinks based on active category
   const filtered = activeCategory === 'All'
     ? drinks
     : drinks.filter(d => d.category === activeCategory);
@@ -271,7 +271,9 @@ export default function DrinkLeaderboard() {
   return (
     <>
       <style>{styles}</style>
+      <div className="lb-bg" />
       <div className="lb-wrapper">
+
         <header className="lb-header">
           <h1>Drink <span>Leaderboard</span></h1>
           <p>Your Last Resort — voted by the regulars</p>
@@ -309,8 +311,7 @@ export default function DrinkLeaderboard() {
                       <div className="rank-cell">
                         {MEDALS[rank]
                           ? <span className="rank-medal">{MEDALS[rank]}</span>
-                          : <span className="rank-number">{rank}</span>
-                        }
+                          : <span className="rank-number">{rank}</span>}
                       </div>
                     </td>
                     <td>
@@ -343,8 +344,11 @@ export default function DrinkLeaderboard() {
 
         <p className="lb-footer">
           Updated live · Votes reset every 30 days ·{' '}
-          <a href="#admin" style={{ color: '#333', textDecoration: 'none' }}>Admin</a>
+          <a href="#admin">Admin</a>
         </p>
+
+        <a className="feat-back" href="#home">← Back Home</a>
+
       </div>
     </>
   );
