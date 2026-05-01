@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { useState } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 const styles = `
@@ -182,15 +182,6 @@ export default function SuggestionsPage() {
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-
-  useEffect(() => {
-    const q = query(collection(db, 'suggestions'), orderBy('createdAt', 'desc'));
-    const unsub = onSnapshot(q, (snap) => {
-      setSuggestions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
-    return unsub;
-  }, []);
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
@@ -232,23 +223,6 @@ export default function SuggestionsPage() {
             {submitting ? 'Sending...' : 'Submit'}
           </button>
           {submitted && <p className="sg-success">✓ Suggestion submitted!</p>}
-        </div>
-
-        <div className="sg-list-container">
-          <div className="sg-list-header">Recent Suggestions</div>
-          {suggestions.map(s => (
-            <div className="sg-item" key={s.id}>
-              <div>{s.text}</div>
-              <div className="sg-item-time">
-                {s.createdAt?.toDate
-                  ? s.createdAt.toDate().toLocaleDateString('en-GB', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit'
-                    })
-                  : 'Just now'}
-              </div>
-            </div>
-          ))}
         </div>
 
         <a className="feat-back" href="#home">← Back Home</a>
