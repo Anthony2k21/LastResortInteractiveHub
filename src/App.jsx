@@ -6,6 +6,7 @@ import DrinkLeaderboard from './DrinkLeaderboard';
 import DrinkSuggestionsPage from './Drink_Suggestions_Page';
 import SuggestionsPage from './SuggestionsPage';
 import LightingPage from './LightingPage';
+import MusicPage from './MusicPage';
 import AdminLogin from './AdminLogin';
 import AdminPanel from './AdminPanel';
 
@@ -35,6 +36,7 @@ function App() {
   if (hash === '#drink_suggestion') return <DrinkSuggestionsPage />;
   if (hash === '#suggestions')      return <SuggestionsPage />;
   if (hash === '#lighting')         return <LightingPage />;
+  if (hash === '#music')            return <MusicPage />;
 
   return <HomePage />;
 }

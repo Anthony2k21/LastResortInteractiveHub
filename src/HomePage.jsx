@@ -1,210 +1,7 @@
 import { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
-
-const styles = `
-  .hp-wrapper {
-    background-color: #111;
-    min-height: 100vh;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 0 60px;
-    position: relative;
-  }
-
-  .hp-bg {
-    position: fixed;
-    inset: 0;
-    background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
-    background-size: cover;
-    background-position: center top;
-    z-index: 0;
-  }
-
-  .hp-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.62);
-  }
-
-  .hp-content {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 48px 20px 60px;
-  }
-
-  .hp-logo {
-    width: 170px;
-    height: 170px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 20px;
-  }
-
-  .hp-title {
-    font-size: clamp(2.8rem, 9vw, 5.5rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 1.1;
-    margin: 0 0 16px;
-    background: linear-gradient(135deg, #ff8c00, #F69A2C, #ff6a00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hp-tagline {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
-    font-weight: 400;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 52px;
-  }
-
-  .hp-cards {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    max-width: 780px;
-  }
-
-  .hp-card {
-    background: rgba(20, 20, 20, 0.82);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: 3px solid #931D0A;
-    border-radius: 8px;
-    padding: 32px 28px;
-    cursor: pointer;
-    text-align: left;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: border-color 0.2s, background 0.2s, transform 0.15s;
-    box-sizing: border-box;
-    flex: 1 1 calc(50% - 16px);
-    max-width: calc(50% - 16px);
-    backdrop-filter: blur(6px);
-  }
-
-  @media (max-width: 600px) {
-    .hp-card {
-      flex: 1 1 100%;
-      max-width: 100%;
-    }
-  }
-
-  .hp-card:hover {
-    border-left-color: #F69A2C;
-    background: rgba(30, 20, 10, 0.88);
-    transform: translateY(-2px);
-  }
-
-  .hp-card.lighting:hover {
-    border-left-color: #F69A2C;
-    background: rgba(26, 26, 10, 0.88);
-  }
-
-  .hp-card-icon {
-    font-size: 1.8rem;
-    margin-bottom: 14px;
-  }
-
-  .hp-card-title {
-    font-size: 1rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-    color: #F69A2C;
-  }
-
-  .hp-card-desc {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.65);
-    line-height: 1.5;
-  }
-
-  .hp-card-cta {
-    display: inline-block;
-    margin-top: 18px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #F69A2C;
-  }
-
-  .hp-insta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 40px;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
-  }
-
-  .hp-insta:hover { color: #fff; }
-
-  .hp-insta svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-
-  .hp-insta-count {
-    color: #F69A2C;
-    font-weight: 800;
-  }
-
-  .hp-insta-sub {
-    display: block;
-    text-align: center;
-    margin-top: 8px;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 0.04em;
-  }
-
-  .hp-insta-sub a {
-    color: #F69A2C;
-    text-decoration: none;
-    font-weight: 700;
-  }
-
-  .hp-footer {
-    margin-top: 48px;
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.2);
-    letter-spacing: 0.05em;
-    text-align: center;
-  }
-
-  .hp-footer a {
-    color: rgba(255, 255, 255, 0.25);
-    text-decoration: none;
-  }
-
-  .hp-footer a:hover { color: rgba(255, 255, 255, 0.5); }
-`;
+import './styles/HomePage.css';
 
 export default function HomePage() {
   const [instaCount, setInstaCount] = useState(null);
@@ -217,8 +14,6 @@ export default function HomePage() {
 
   return (
     <>
-      <style>{styles}</style>
-
       {/* pub background — loaded from /public/land_pic_7.b2b35a5fdbaaafabd007.jpg */}
       <div className="hp-bg" />
 
@@ -256,13 +51,13 @@ export default function HomePage() {
             <span className="hp-card-cta">See what's tasty! →</span>
           </a>
 
-          <a className="hp-card" href="#suggestions">
-            <div className="hp-card-icon">💬</div>
-            <div className="hp-card-title">Suggest Your Ideas!</div>
+          <a className="hp-card" href="#music">
+            <div className="hp-card-icon">🎵</div>
+            <div className="hp-card-title">Music Requests</div>
             <div className="hp-card-desc">
-              Tell us what we're missing.
+              Got a song stuck in your head? Request it and we'll get it on.
             </div>
-            <span className="hp-card-cta">Start suggesting! →</span>
+            <span className="hp-card-cta">Request a song →</span>
           </a>
 
           <a className="hp-card lighting" href="#lighting">
@@ -272,6 +67,15 @@ export default function HomePage() {
               Set the mood. Choose a colour preset to change the atmosphere of the bar.
             </div>
             <span className="hp-card-cta">Change the lights →</span>
+          </a>
+
+          <a className="hp-card hp-card-full" href="#suggestions">
+            <div className="hp-card-icon">💬</div>
+            <div className="hp-card-title">Suggest Your Ideas!</div>
+            <div className="hp-card-desc">
+              Tell us what we're missing.
+            </div>
+            <span className="hp-card-cta">Start suggesting! →</span>
           </a>
 
         </div>

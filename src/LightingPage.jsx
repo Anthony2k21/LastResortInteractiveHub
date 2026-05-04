@@ -1,70 +1,9 @@
 import LightingControl from './LightingControl';
-
-const styles = `
-  .lp-bg {
-    position: fixed;
-    inset: 0;
-    background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
-    background-size: cover;
-    background-position: center top;
-    z-index: 0;
-  }
-  .lp-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-  }
-  .lp-wrapper {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 48px 20px 60px;
-  }
-  .lp-title {
-    font-size: clamp(2.2rem, 6vw, 3.5rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    text-align: center;
-    margin: 0 0 8px;
-    color: #fff;
-  }
-  .lp-title span { color: #F69A2C; }
-  .lp-subtitle {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 36px;
-  }
-  .lp-back {
-    display: inline-block;
-    margin-top: 40px;
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 0.8rem;
-    text-decoration: none;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-  .lp-back:hover { color: #F69A2C; }
-  @media (max-width: 600px) {
-    .lp-wrapper { padding: 24px 16px 40px; }
-  }
-`;
+import './styles/LightingPage.css';
 
 export default function LightingPage() {
   return (
     <>
-      <style>{styles}</style>
       <div className="lp-bg" />
       <div className="lp-wrapper">
         <h1 className="lp-title">Venue <span>Lighting</span></h1>
