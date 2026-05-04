@@ -1,201 +1,46 @@
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
+import './styles/SuggestionsPage.css';
 
-const styles = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .sg-bg {
-    position: fixed;
-    inset: 0;
-    background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
-    background-size: cover;
-    background-position: center top;
-    z-index: 0;
-  }
-
-  .sg-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-  }
-
-  .sg-wrapper {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #fff;
-    padding: 48px 20px 60px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .sg-header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-
-  .sg-title {
-    font-size: clamp(2.2rem, 6vw, 3.5rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0 0 8px;
-    color: #fff;
-  }
-
-  .sg-title span { color: #F69A2C; }
-
-  .sg-subtitle {
-    color: rgba(255,255,255,0.5);
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .sg-form-container {
-    width: 100%;
-    max-width: 860px;
-    background: rgba(20,20,20,0.85);
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 32px;
-    margin-bottom: 24px;
-    backdrop-filter: blur(6px);
-  }
-
-  .sg-form-container label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 10px;
-  }
-
-  .sg-textarea {
-    width: 100%;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 4px;
-    color: #fff;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.95rem;
-    padding: 14px;
-    resize: vertical;
-    min-height: 120px;
-    transition: border-color 0.2s;
-  }
-
-  .sg-textarea:focus {
-    outline: none;
-    border-color: #931D0A;
-  }
-
-  .sg-submit {
-    margin-top: 16px;
-    background: #931D0A;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 12px 28px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .sg-submit:hover { background: #b02209; }
-  .sg-submit:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; }
-
-  .sg-success {
-    margin-top: 12px;
-    color: #F69A2C;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .sg-list-container {
-    width: 100%;
-    max-width: 860px;
-    background: rgba(20,20,20,0.85);
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(6px);
-  }
-
-  .sg-list-header {
-    background: #931D0A;
-    padding: 14px 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #fff;
-  }
-
-  .sg-item {
-    padding: 18px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #fff;
-    transition: background 0.15s;
-  }
-
-  .sg-item:last-child { border-bottom: none; }
-  .sg-item:hover { background: rgba(255,255,255,0.04); }
-
-  .sg-item-time {
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.3);
-    margin-top: 6px;
-  }
-
-  /* consistent back button */
-  .feat-back {
-    display: inline-block;
-    margin-top: 40px;
-    color: rgba(255,255,255,0.45);
-    font-size: 0.8rem;
-    text-decoration: none;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-
-  .feat-back:hover { color: #F69A2C; }
-
-  @media (max-width: 600px) {
-    .sg-wrapper { padding: 28px 16px 48px; }
-    .sg-header { margin-bottom: 24px; }
-    .sg-form-container { padding: 20px 16px; }
-  }
-`;
+const MAX_CHARS = 300;
+const MIN_CHARS = 10;
+const COOLDOWN_MS = 60000;
 
 export default function SuggestionsPage() {
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+
+  const trimmed = text.trim();
+  const charCount = text.length;
+
+  const handleChange = (e) => {
+    if (e.target.value.length <= MAX_CHARS) {
+      setText(e.target.value);
+      setError('');
+    }
+  };
 
   const handleSubmit = async () => {
-    if (!text.trim()) return;
+    if (trimmed.length < MIN_CHARS) {
+      setError(`Please write at least ${MIN_CHARS} characters.`);
+      return;
+    }
+    const lastSubmit = localStorage.getItem('sg_last_submit');
+    if (lastSubmit && Date.now() - Number(lastSubmit) < COOLDOWN_MS) {
+      const secs = Math.ceil((COOLDOWN_MS - (Date.now() - Number(lastSubmit))) / 1000);
+      setError(`Please wait ${secs}s before submitting again.`);
+      return;
+    }
     setSubmitting(true);
+    setError('');
     await addDoc(collection(db, 'suggestions'), {
-      text: text.trim(),
+      text: trimmed,
       createdAt: serverTimestamp(),
     });
+    localStorage.setItem('sg_last_submit', String(Date.now()));
     setText('');
     setSubmitted(true);
     setSubmitting(false);
@@ -204,7 +49,6 @@ export default function SuggestionsPage() {
 
   return (
     <>
-      <style>{styles}</style>
       <div className="sg-bg" />
       <div className="sg-wrapper">
 
@@ -219,15 +63,20 @@ export default function SuggestionsPage() {
             id="sg-input"
             className="sg-textarea"
             value={text}
-            onChange={e => setText(e.target.value)}
+            onChange={handleChange}
+            placeholder="What would you like to see at The Last Resort?"
           />
+          <p className={`sg-char-count${charCount >= MAX_CHARS ? ' at-limit' : charCount >= MAX_CHARS * 0.8 ? ' near-limit' : ''}`}>
+            {charCount}/{MAX_CHARS}
+          </p>
           <button
             className="sg-submit"
             onClick={handleSubmit}
-            disabled={submitting || !text.trim()}
+            disabled={submitting || trimmed.length < MIN_CHARS}
           >
             {submitting ? 'Sending...' : 'Submit'}
           </button>
+          {error && <p className="sg-error">{error}</p>}
           {submitted && <p className="sg-success">✓ Suggestion submitted!</p>}
         </div>
 

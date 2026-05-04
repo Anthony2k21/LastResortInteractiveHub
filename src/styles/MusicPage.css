@@ -1,0 +1,144 @@
+.mp-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url('/land_pic_7.b2b35a5fdbaaafabd007.jpg');
+  background-size: cover;
+  background-position: center top;
+  z-index: 0;
+}
+
+.mp-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.mp-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+  padding: 48px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mp-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.mp-title {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 8px;
+  color: #fff;
+}
+
+.mp-title span { color: #F69A2C; }
+
+.mp-subtitle {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mp-form-container {
+  width: 100%;
+  max-width: 620px;
+  background: rgba(20,20,20,0.85);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 32px;
+  backdrop-filter: blur(6px);
+}
+
+.mp-form-container label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+}
+
+.mp-input {
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.95rem;
+  padding: 12px 14px;
+  transition: border-color 0.2s;
+  margin-bottom: 18px;
+}
+
+.mp-input:focus {
+  outline: none;
+  border-color: #F69A2C;
+}
+
+.mp-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.mp-submit {
+  margin-top: 4px;
+  background: #F69A2C;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 28px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 3px 0 #c77c1d;
+}
+
+.mp-submit:hover { background: #ffaa44; }
+.mp-submit:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); box-shadow: none; cursor: not-allowed; }
+
+.mp-success {
+  margin-top: 14px;
+  color: #F69A2C;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mp-error {
+  margin-top: 10px;
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.feat-back {
+  display: inline-block;
+  margin-top: 40px;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.8rem;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.feat-back:hover { color: #F69A2C; }
+
+@media (max-width: 600px) {
+  .mp-wrapper { padding: 24px 16px 40px; }
+}
