@@ -298,3 +298,10 @@
 .ap-inbox-text { font-size: 0.9rem; color: #fff; line-height: 1.5; flex: 1; }
 .ap-inbox-time { font-size: 0.75rem; color: #555; margin-top: 4px; }
 .ap-inbox-empty { text-align: center; padding: 40px 20px; color: #555; font-size: 0.9rem; }
+
+@media (max-width: 600px) {
+  .ap-hide-mobile { display: none; }
+  .ap-table td, .ap-table thead th { padding: 10px 12px; }
+  .ap-insta-row { flex-wrap: wrap; }
+  .ap-insta-row input { width: 100%; }
+}

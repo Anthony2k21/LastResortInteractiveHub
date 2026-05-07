@@ -253,7 +253,5 @@
 }
 
 @media (max-width: 600px) {
-  .lb-table thead th.hide-mobile,
-  .lb-table td.hide-mobile { display: none; }
   .lb-table td, .lb-table thead th { padding: 12px; }
 }
