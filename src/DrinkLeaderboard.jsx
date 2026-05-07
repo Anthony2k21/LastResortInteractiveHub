@@ -29,8 +29,6 @@ export default function DrinkLeaderboard() {
     ? drinks
     : drinks.filter(d => d.category === activeCategory);
 
-  const maxVotes = filtered[0]?.votes ?? 1;
-
   return (
     <>
       <div className="lb-bg" />
@@ -66,7 +64,6 @@ export default function DrinkLeaderboard() {
             <tbody>
               {filtered.map((drink, i) => {
                 const rank = i + 1;
-                const pct = Math.round((drink.votes / maxVotes) * 100);
                 return (
                   <tr key={drink.id}>
                     <td>
@@ -89,15 +86,7 @@ export default function DrinkLeaderboard() {
                       </div>
                     </td>
                     <td>
-                      <div className="votes-bar-wrap">
-                        <div className="votes-bar-bg">
-                          <div
-                            className={`votes-bar-fill${rank === 1 ? ' top' : ''}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                        <span className="votes-count">{drink.votes}</span>
-                      </div>
+                      <span className="votes-count">{drink.votes}</span>
                     </td>
                     <td className="right">
                       <span className="price-tag">{drink.price}</span>
