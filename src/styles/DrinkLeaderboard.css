@@ -159,28 +159,6 @@
   margin-top: 2px;
 }
 
-.votes-bar-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.votes-bar-bg {
-  flex: 1;
-  height: 6px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 3px;
-  min-width: 80px;
-}
-
-.votes-bar-fill {
-  height: 6px;
-  border-radius: 3px;
-  background: #931D0A;
-  transition: width 0.4s ease;
-}
-
-.votes-bar-fill.top { background: #F69A2C; }
 
 .votes-count {
   font-size: 0.85rem;
