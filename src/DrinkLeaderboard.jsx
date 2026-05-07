@@ -59,8 +59,8 @@ export default function DrinkLeaderboard() {
               <tr>
                 <th style={{ width: 50 }}>#</th>
                 <th>Drink</th>
-                <th className="hide-mobile">Votes</th>
-                <th className="right hide-mobile">Price</th>
+                <th>Votes</th>
+                <th className="right">Price</th>
               </tr>
             </thead>
             <tbody>
@@ -88,7 +88,7 @@ export default function DrinkLeaderboard() {
                         <button className="upvote-btn" onClick={() => handleVote(drink.id)}>▲</button>
                       </div>
                     </td>
-                    <td className="hide-mobile">
+                    <td>
                       <div className="votes-bar-wrap">
                         <div className="votes-bar-bg">
                           <div
@@ -99,7 +99,7 @@ export default function DrinkLeaderboard() {
                         <span className="votes-count">{drink.votes}</span>
                       </div>
                     </td>
-                    <td className="right hide-mobile">
+                    <td className="right">
                       <span className="price-tag">{drink.price}</span>
                     </td>
                   </tr>

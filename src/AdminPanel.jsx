@@ -195,9 +195,9 @@ export default function AdminPanel({ user }) {
                 <thead>
                   <tr>
                     <th>Drink</th>
-                    <th>Category</th>
-                    <th>Votes</th>
-                    <th>Price</th>
+                    <th className="ap-hide-mobile">Category</th>
+                    <th className="ap-hide-mobile">Votes</th>
+                    <th className="ap-hide-mobile">Price</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
@@ -208,9 +208,9 @@ export default function AdminPanel({ user }) {
                         {drink.name}
                         {drink.isNew && <span className="ap-badge-new">New</span>}
                       </td>
-                      <td><span className="ap-cat">{drink.category}</span></td>
-                      <td>{drink.votes}</td>
-                      <td><span className="ap-price">{drink.price}</span></td>
+                      <td className="ap-hide-mobile"><span className="ap-cat">{drink.category}</span></td>
+                      <td className="ap-hide-mobile">{drink.votes}</td>
+                      <td className="ap-hide-mobile"><span className="ap-price">{drink.price}</span></td>
                       <td>
                         <div className="ap-actions">
                           <button className="btn btn-ghost btn-sm" onClick={() => openEdit(drink)}>Edit</button>
