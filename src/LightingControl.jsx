@@ -1,12 +1,5 @@
 /**
- * LightingControl.jsx
- * Drop this into your existing src/components/ folder.
- *
- * Usage in your existing app:
- *   import LightingControl from './components/LightingControl'
- *   <LightingControl />
- *
- * It talks to your backend (or Pi directly) via VITE_LIGHTING_API_URL in .env
+ * This talks to the backend (or Pi directly) via VITE_LIGHTING_API_URL in .env
  * If that var is not set it falls back to http://localhost:3001
  */
 
@@ -25,7 +18,6 @@ const PRESETS = [
   { id: 'party',  label: '🎉 Party', desc: 'Colour cycling', r: 255, g: 0,   b: 120, hex: 'party'   },
 ]
 
-// ─── Styles (scoped via className prefix lc-) ──────────────────────────────────
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Mulish:wght@300;400;600&display=swap');
 
