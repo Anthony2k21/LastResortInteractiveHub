@@ -55,11 +55,6 @@ button, a {
   overflow-x: hidden;
 }
 
-/* 
-  IMPORTANT: removed the global h1/h2 styles that were causing 
-  titles to be cut off on all feature pages. Each page now 
-  controls its own heading styles.
-*/
 
 p {
   margin: 0;
